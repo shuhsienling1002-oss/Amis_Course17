@@ -29,7 +29,7 @@ def safe_play_audio(text):
 # --- 0. 系統配置 ---
 st.set_page_config(page_title="Unit 17: O Toki", page_icon="⏰", layout="centered")
 
-# --- CSS 美化 (晨曦黃) ---
+# --- CSS 美化 ---
 st.markdown("""
     <style>
     body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
@@ -68,11 +68,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. 資料庫 (Unit 17) ---
+# --- 2. 資料庫 (Unit 17 修正版) ---
 vocab_data = [
     {"amis": "Dafak", "chi": "早上", "icon": "🌅", "source": "Dict: Morning"},
     {"amis": "Malahok", "chi": "中午", "icon": "☀️", "source": "Row 5542"},
-    {"amis": "Lafii", "chi": "晚上", "icon": "🌙", "source": "Basic"},
+    {"amis": "Lafii", "chi": "深夜", "icon": "🌙", "source": "User Fix"}, # 修正定義
     {"amis": "Anini", "chi": "今天", "icon": "👇", "source": "Row 6500"},
     {"amis": "Anocila", "chi": "明天", "icon": "👉", "source": "Row 486"},
     {"amis": "Nacila", "chi": "昨天", "icon": "👈", "source": "Row 6500"},
@@ -83,9 +83,9 @@ vocab_data = [
 ]
 
 sentences = [
-    {"amis": "Lomowad to kako.", "chi": "我起床了。", "icon": "🥱", "source": "Row 22 (Modified)"},
-    {"amis": "Malahok to.", "chi": "中午了(吃午餐了)。", "icon": "🍱", "source": "Row 363 (Concept)"},
-    {"amis": "Mafoti' ci mama i lafii.", "chi": "爸爸晚上睡覺。", "icon": "💤", "source": "Row 4 + Lafii"},
+    {"amis": "Lomowad to kako.", "chi": "我起床了。", "icon": "🥱", "source": "Row 22"},
+    {"amis": "Malahok to.", "chi": "中午了(吃午餐了)。", "icon": "🍱", "source": "Row 363"},
+    {"amis": "Mafoti' ci mama i lafii.", "chi": "爸爸在深夜睡覺。", "icon": "💤", "source": "User Fix (Lafii)"}, # 修正翻譯
     {"amis": "Anocila a tayra i pitilidan.", "chi": "明天要去學校。", "icon": "🏫", "source": "Row 486"},
     {"amis": "Safaw tosa ko toki anini.", "chi": "現在是十二點。", "icon": "🕛", "source": "Unit 11"},
 ]
@@ -102,9 +102,9 @@ raw_quiz_pool = [
     {
         "q": "Mafoti' ci mama i lafii.",
         "audio": "Mafoti' ci mama i lafii",
-        "options": ["爸爸晚上睡覺", "爸爸早上起床", "爸爸中午吃飯"],
-        "ans": "爸爸晚上睡覺",
-        "hint": "Lafii 是晚上"
+        "options": ["爸爸在深夜睡覺", "爸爸早上起床", "爸爸中午吃飯"],
+        "ans": "爸爸在深夜睡覺",
+        "hint": "Lafii 是深夜"
     },
     {
         "q": "Malahok to.",
@@ -123,9 +123,16 @@ raw_quiz_pool = [
     {
         "q": "單字測驗：Dafak",
         "audio": "Dafak",
-        "options": ["早上", "晚上", "中午"],
+        "options": ["早上", "深夜", "中午"],
         "ans": "早上",
         "hint": "太陽剛出來的時候"
+    },
+    {
+        "q": "單字測驗：Lafii",
+        "audio": "Lafii",
+        "options": ["深夜", "中午", "早上"],
+        "ans": "深夜",
+        "hint": "很晚很晚的時候"
     },
     {
         "q": "「睡覺」的阿美語怎麼說？",
@@ -163,7 +170,7 @@ if 'init' not in st.session_state:
 
 # --- 5. 主介面 ---
 st.markdown("<h1 style='text-align: center; color: #F57F17;'>Unit 17: O Toki</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #666;'>時間與日常 (Time & Daily Life)</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #666;'>時間與日常 (Lafii Fixed)</p>", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["📚 詞彙與句型", "🎲 隨機挑戰"])
 
@@ -212,6 +219,7 @@ with tab2:
             if st.button("🎧 播放題目音檔", key=f"btn_audio_{st.session_state.current_q_idx}"):
                 safe_play_audio(q_data['audio'])
         
+        # 使用洗牌後的選項
         unique_key = f"q_{st.session_state.quiz_id}_{st.session_state.current_q_idx}"
         user_choice = st.radio("請選擇正確答案：", q_data['shuffled_options'], key=unique_key)
         
@@ -237,6 +245,7 @@ with tab2:
         """, unsafe_allow_html=True)
         
         if st.button("🔄 再來一局 (重新抽題)", key="btn_restart"):
+            # 重置時重新洗牌
             st.session_state.score = 0
             st.session_state.current_q_idx = 0
             st.session_state.quiz_id = str(random.randint(1000, 9999))
